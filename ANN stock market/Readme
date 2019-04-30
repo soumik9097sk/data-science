@@ -1,0 +1,11 @@
+This is a stock market predictor made using ANN. 
+The dataset used is Titan stock market Historical data.
+Libraires used are NUMPY, PANDAS, MATPLOTLIB, SKLEARN, KERAS and TA-Lib
+
+TA-Lib is used  to perform technical analysis of financial market data.
+NUMPY is used to do mathematical operations.
+PANDAS is used to for data-manipulation and analysis.
+MATPLOTLIB is used for plotting the data.
+SKLEARN provides us with excellent tools for data analysis.
+KERAS is a high level neural network library running on top of Tensorflow.
+
