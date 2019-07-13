@@ -1,11 +1,250 @@
 This is a stock market predictor made using ANN. 
 The dataset used is Titan stock market Historical data.
-Libraires used are NUMPY, PANDAS, MATPLOTLIB, SKLEARN, KERAS and TA-Lib
+Libraires used are NUMPY, PANDAS, MATPLOTLIB, SKLEARN, KERAS.
 
-TA-Lib is used  to perform technical analysis of financial market data.
 NUMPY is used to do mathematical operations.
 PANDAS is used to for data-manipulation and analysis.
 MATPLOTLIB is used for plotting the data.
 SKLEARN provides us with excellent tools for data analysis.
 KERAS is a high level neural network library running on top of Tensorflow.
 
+
+Project Report (Stock Market Analysis using Neural Networks)
+Soumik Karmakar (2019)
+
+
+
+
+
+Keras : Covered basics of Keras . Learnt how to build a neural network for deep learning.
+
+
+
+Made a project on stock market prediction using Keras and python:
+
+
+
+Data Set : Titan stock market historical prices data set from Yahoo finance.
+
+Tools Used : Anaconda Spyder, Keras
+
+Language : Python with numpy ,pandas, matplotlib and sklearn
+
+Optimization Variables : Epoch = 100, Batch Size = 10
+
+
+
+Explanation :
+
+Used a ANN with 3 layers to learn the data sets.
+
+
+
+Setting random seed value to start with same seed every time.
+
+
+
+Removing irrelevant from the data set .
+
+Selected features : Open , High , Close, Low.
+
+
+
+Now using the remaining features to create a new set of features customized for stock market.
+
+New customized features :
+
+H-L, O-C, 3day MA, 10day MA, 30day MA, Std_dev, RSI, Williams %R 
+
+Features Engineering: 
+3 day moving average : It's a successive average of a constant set of values. For 3 day moving average the size of the constant set is 3 elements at a time.
+
+
+
+10 day moving average : For 10 day moving average the size of the constant set is 3 elements at a time.
+
+
+
+30 day moving average : For 30 day moving average the size of the constant set is 3 elements at a time.
+
+
+
+Standard Deviation : For Standard deviation I took a window of 4 days and calculated the average of the elements in that window.
+
+
+
+RSI (relative strength index) : It' s a very popular parameter used by the stock market traders while they make their guesses on which stocks to buy and sell.
+
+To calculate RSI I followed following steps :
+
+l First I calculated the difference in Closing price of the stock on a particular day with the Closing price of the day before and stored it in a column named Change.
+
+l Then I created two columns Upward Movement and Downward Movement. Whenever Change was positive I stored it in the Upward movement and whenever it was negative I stored 0 in that position. In Downward Movement I stored absolute value of Change whenever it was negative and 0 whenever it was positive.
+
+l Then I created a column Average Upward Movement in which I took a window size of 10 and calculated the average for all the consecutive rows
+
+l Then I created a column Average Downward Movement in which I took a window size of 10 and calculated the average for all the consecutive rows
+
+l Then applied the following formula to Average Upward Movement column:
+
+n [(Average upward movement of previous day )*( size of window - 1) + (upward movement)] / [size of window]
+
+l Then applied the following formula to Average Downward Movement column:
+
+n [(Average downward movement of previous day )*( size of window - 1) + (downward movement)] / [size of window]
+
+l Then I calculated Relative Strength by dividing Average upward movement column by Average Downward Movement column.
+
+l Then finally I calculated RSI(Relative Strength Index) with the help of following formula :
+
+n 100 - 100/(Relative Strength + 1)
+
+
+
+
+
+
+
+William %R : This is also a very popular parameter. It’s called William Percentage Range. It measures overbought and oversold levels.
+
+l Created a column Max high and stored maximum value in a moving window of size 10.
+
+l Created a column Min low and stored minimum value in a moving window of size 10.
+
+l Created a column William %R and applied following formula :
+
+n [(Max high - Close)/(Max high - Min low)] * 100
+
+
+
+
+
+H-L: Difference between High and Low column
+
+
+
+O-C : Difference between Close and Open
+
+
+
+Creating label :
+
+Price Rise : If closing price of a day is greater than previous day then set to 1 else set to 0.
+
+
+
+Price Rise will acts as a label for us.
+
+
+
+Dropped all the null values since data set was not having much null values.
+
+
+
+Selected custom features except the Price_Rise as the input features and Price_Rise as the output label.
+
+
+
+Kept 80% of data for training and 20% for testing.
+
+
+
+Used Standard scalar from sklean preprocessing library for feature scaling to prevent biasing while training the model. This makes the mean of the input features equal to zero and convert their variance to 1. This prevents the model from assigning higher weights to features having higher mean than others.
+
+
+
+Creating the ANN model
+
+We created a classifier and add 3 layers to the classifier.
+
+
+
+Adding the first layer :
+
+We set the number of neurons to 128. To initialize weights with a uniform distribution we set kernel initializer to uniform. Using relu as activation function. Setting the number of inputs to the hidden layer equal to the number of columns.
+
+
+
+classifier.add(Dense(units = 128, kernel_initializer = 'uniform', activation = 'relu', input_dim = X.shape[1]))
+
+
+
+Adding the Second layer :
+
+Setting number of neurons to 128. kernel initializer to uniform and relu as an activation function.
+
+
+
+classifier.add(Dense(units = 128, kernel_initializer = 'uniform', activation = 'relu'))
+
+
+
+Adding the ouput layer:
+
+Setting number of neurons to 1 since this is the ouput layer. Used Sigmoid as the activation function to get probablity of price rise in the market.
+
+
+
+classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
+
+
+
+
+
+Compiling the classifier:
+
+We set the parameters to compile the model:
+
+Optimizer used : adam
+
+Loss : mean square error
+
+Metrics : accuracy
+
+
+
+Fitting the neural network
+
+Setting batch size to 10 and number of epochs to 100
+
+
+
+
+
+Predicting stock movement
+
+First we convert the prediction to true and false values by making the values greater than 0.5 to true and lesser than 0.5 to false.Adding pred column to data set using the values of prediction.
+
+
+
+Creating new column in dataframe Tommorows Returns. Filling the column by taking dividing the closing price of a day by closing price of day before and taking a log of it. We take log here to Normalize the data. For that we assume that prices are distributed log normally.
+
+
+
+Creating a column Strategy Returns. Filling the column with the values of Tommorows Returns value where the prediction is true else set to 0.
+
+
+
+Creating final 2 column Cumulative market returns and Cumulative Strategy returns . Using numpy cumsum to fill Cumulative market returns with cumulative sum of Tommorows Returns and Cumulative Strategy returns with cumulative sum of Strategy Returns.
+
+
+
+We took Cumulative sum to make the graph smooth and to focus on the actual trend.
+
+
+
+
+Summary : In the end we see that how the our investor will play out in comparison to the market if he uses our model.
+
+
+
+Disclaimer : This model is purely for educational purpose and this was just an experiment on an example data set.  
+
+
+https://quantivity.wordpress.com/2011/02/21/why-log-returns/
+
+https://www.investopedia.com/articles/active-trading/052014/how-use-moving-average-buy-stocks.asp
+
+https://www.investopedia.com/terms/w/williamsr.asp
+
+https://www.investopedia.com/terms/r/rsi.asp
